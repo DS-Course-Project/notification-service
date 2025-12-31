@@ -1,0 +1,1 @@
+ALTER TABLE "notification" ADD COLUMN "isRead" boolean DEFAULT false NOT NULL;

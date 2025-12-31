@@ -5,7 +5,19 @@ import { eq } from "drizzle-orm";
 
 const api: Express = express();
 
-api.get("/user/:userId", async (req: Request, res: Response) => {
+api.get("/notifications", async (req: Request, res: Response) => {
+  const userId = req.headers["x-user-id"];
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const notifications = await getDb().select().from(notification).where(eq(notification.userId, userId.toString()));
+
+  res.status(200).json(notifications);
+});
+
+api.get("/notifications/user/:userId", async (req: Request, res: Response) => {
   const notifications = await getDb()
     .select()
     .from(notification)
@@ -14,7 +26,7 @@ api.get("/user/:userId", async (req: Request, res: Response) => {
   res.status(200).json(notifications);
 });
 
-api.get("/ticket/:ticketId", async (req: Request, res: Response) => {
+api.get("/notifications/ticket/:ticketId", async (req: Request, res: Response) => {
   const notifications = await getDb()
     .select()
     .from(notification)
@@ -26,6 +38,20 @@ api.get("/ticket/:ticketId", async (req: Request, res: Response) => {
   }
 
   res.status(200).json(notifications[0]);
+});
+
+api.patch("/notifications/:id/read", async (req: Request, res: Response) => {
+  const notificationId = req.params.id;
+  console.log(notificationId);
+  if (!notificationId) {
+    res.status(400).json({ message: "Notification id is required" });
+    return;
+  }
+
+  const db = getDb();
+  await db.update(notification).set({ isRead: true }).where(eq(notification.id, notificationId));
+
+  res.status(200).json({ message: "Notification read" });
 });
 
 export { api };

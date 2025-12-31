@@ -3,7 +3,7 @@ import { getDb } from "./lib/db";
 import { runKafka, stopKafka } from "./lib/subscriber/kafka";
 
 api.listen(3003, () => {
-  console.log("API running on port 3000");
+  console.log("API running on port 3003");
 
   getDb();
 
